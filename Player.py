@@ -9,6 +9,7 @@ class Player():
     name=""
     tour=0
     position_joueur=0 #Position du joueur dans le tour actuel
+    requests_remaining=15
 
     def __init__(self, name):
         self.name=name
@@ -17,6 +18,9 @@ class Player():
                           "usine":5000,
                           "orni":400,
                           "saboter":600}
+    def applyRequest(self):
+        self.requests_remaining-=1
+        self.getResponse()
 
     def getResponse(self):
         rep = self.client.recv(1024).decode().rstrip()
@@ -44,63 +48,46 @@ class Player():
     
     def ajouter_recolteuse(self, numligne, numcolonne):
         self.client.sendall(("AJOUTERRECOLTEUSE|{}|{}".format(numligne,numcolonne)+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
     
     def ajouter_usine(self, numligne,numcolonne):
         self.client.sendall(("AJOUTERUSINE|{}|{}".format(numligne,numcolonne)+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
 
     def deplacer(self, numlignedep,numcolonnedep,numlignearr,numcolonnearr):
         self.client.sendall(("DEPLACER|{}|{}|{}|{}".format(numlignedep,numcolonnedep,numlignearr,numcolonnearr)+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
 
     def ajouter_orni(self,secteur):
         self.client.sendall(("AJOUTERORNI|{}".format(secteur)+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
 
     def saboter(self,secteur):
         self.client.sendall(("SABOTER|{}".format(secteur)+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
 
     def fin_tour(self):
         self.time_to_play=False
         self.client.sendall(("FINDETOUR"+'\n').encode())
-        self.getResponse()
+        self.requests_remaining=15
+        self.applyRequest()
 
     def infos_densite(self):
         self.client.sendall(("DENSITE"+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
         
     def infos_elements(self):
         self.client.sendall(("ELEMENTS"+'\n').encode())
-        self.getResponse()
+        self.applyRequest()
     
     def infos_warning(self):
         self.client.sendall(("WARNING"+'\n').encode()) 
-        self.getResponse()
+        self.applyRequest()
         
     def infos_scores(self):
         self.client.sendall(("SCORES"+'\n').encode()) 
-        self.getResponse()
+        self.applyRequest()
     
-
-    def is_adjacent(numligne1,numcolonne1,numligne2,numcolonne2):
-        if((numligne1 in (0,15)) and (numligne2 in (0,15)) and (numcolonne1 in (0,18)) and (numcolonne2 in (0,18))):
-            if (numligne1+1==numligne2) and (numcolonne1+1==numcolonne2):
-                return True
-            elif(numligne1==numligne2) and (numcolonne1+1==numcolonne2):
-                return True
-            elif(numligne1+1==numligne2) and (numcolonne1==numcolonne2):
-                return True
-            elif(numligne1==numligne2) and (numcolonne1-1==numcolonne2):
-                return True
-            elif(numligne1-1==numligne2) and (numcolonne1==numcolonne2):
-                return True
-            elif(numligne1-1==numligne2) and (numcolonne1+1==numcolonne2):
-                return True
-            else:
-                return False
-
 def assez_ressources(self, type_element, quantite) -> bool:
         """
         Vérifie si le joueur a suffisamment de ressources pour réaliser une action.
