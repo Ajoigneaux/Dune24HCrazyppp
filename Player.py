@@ -9,6 +9,10 @@ class Player():
         self.name=name
         self.client=self.connectePlayer(self.name)
         self.tour=1
+        self.epice_necessaire={"recolteuse":3000,
+                          "usine":5000,
+                          "orni":400,
+                          "saboter":600}
 
     def getResponse(self):
         rep = self.client.recv(1024).decode()
@@ -75,4 +79,10 @@ class Player():
             else:
                 return False
 
-
+    def assez_ressources(self, type_element, quantite) -> bool:
+        """
+        Vérifie si le joueur a suffisamment de ressources pour réaliser une action.
+        True si c'est bon 
+        False si c'est pas bon
+        """
+        return self.epice_necessaire[type_element]<=quantite
