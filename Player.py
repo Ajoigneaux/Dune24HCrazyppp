@@ -74,11 +74,40 @@ class Player():
 
     def infos_densite(self):
         self.client.sendall(("DENSITE"+'\n').encode())
-        self.applyRequest()
-        
+        ans = self.getResponse()
+        if not ans:
+            print(self.name, ": DENSITE: aucune réponse du serveur")
+            return None
+        ans = ans.rstrip()
+        densite_ligne = []
+        for i in range(0, len(ans), 18):
+            densite_ligne.append(list(ans[i:i+18]))
+        # ajouter deux bordures de zéros tout autour du tableau
+        padded = [["0"] * 22, ["0"] * 22]
+        for row in densite_ligne:
+            padded.append(["0", "0"] + row + ["0", "0"])
+        padded.append(["0"] * 22)
+        padded.append(["0"] * 22)
+        print(padded)
+        return padded
+
     def infos_elements(self):
         self.client.sendall(("ELEMENTS"+'\n').encode())
-        self.applyRequest()
+        ans = self.getResponse()
+        if not ans:
+            print(self.name, ": ELEMENTS: aucune réponse du serveur")
+            return None
+        ans = ans.rstrip()
+        elements = []
+        for i in range(0, len(ans), 18):
+            elements.append(list(ans[i:i+18]))
+        # ajouter deux bordures de zéros tout autour du tableau
+        padded = [["0"] * 22, ["0"] * 22]
+        for row in elements:
+            padded.append(["0", "0"] + row + ["0", "0"])
+        padded.append(["0"] * 22)
+        padded.append(["0"] * 22)
+        return padded
     
     def infos_warning(self):
         self.client.sendall(("WARNING"+'\n').encode()) 
