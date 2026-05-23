@@ -38,7 +38,7 @@ def adjacence_niveau_2(numligne, numcolonne):
     for voisin in voisins:
         voisins_niveau_2.extend(adjacence(voisin[0], voisin[1]))
     voisins_niveau_2=list(set(voisins_niveau_2))
-    return voisins_niveau_2
+    return voisins_niveau_2#Attention renvoie lui même aussi PABIEN
 
 def matrice_usine(elements):
     matrice = [[0 for _ in range(18)] for _ in range(16)]
@@ -50,14 +50,31 @@ def matrice_usine(elements):
                     matrice[voisin[0]][voisin[1]]=1
     return matrice
 
-    
+def matrice_foreuse(elements):
+    matrice = [[1 for _ in range(18)] for _ in range(16)]
+    nbr_foreuse=0
+    for i in range(16):
+        for j in range(18):
+            voisins=adjacence(i,j)
+            for voisin in voisins:
+                if elements[voisin[0]][voisin[1]] in ["0","1","2","3"]:
+                    nbr_foreuse+=1
+            if elements[i][j] in ["0","1","2","3"]:
+                nbr_foreuse+=1
+            matrice[i][j]=1/(nbr_foreuse+1)
+            nbr_foreuse=0
+    return matrice
+
 
 def recalc_densite(densite, elements):
     new_densite=[[0 for _ in range(18)] for _ in range(16)]
     usine=matrice_usine(elements)
+    foreuse=matrice_foreuse(elements)
     for i in range(16):
         for j in range(18):
             new_densite[i][j]=densite[i][j]+usine[i][j]
+            new_densite[i][j]*=foreuse[i][j]
+
     return new_densite
 
 def parse_densite(densite):
@@ -67,9 +84,9 @@ def parse_densite(densite):
     return densite_liste
 
 element = [[0 for _ in range(18)] for _ in range(16)]
-element[1][1]="U"
-element[10][10]="U"
-element[1][2]="U"
+element[1][1]="3"
+element[10][10]="2"
+element[1][2]="1"
 
 densite_string = "111131211111112234112242311111212333111234421111133332233233211111233232123322221111144121112211121111332111322121233221221211323233322111121111333433434312321122333433432312221322232443322323222132424344443334221232324344323443421132333243112322211111232221112322111111112111111222111111"
 densite=parse_densite(densite_string)
