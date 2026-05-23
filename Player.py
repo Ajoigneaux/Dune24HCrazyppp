@@ -10,6 +10,7 @@ class Player():
     tour=0
     position_joueur=0 #Position du joueur dans le tour actuel
     requests_remaining=15
+    numjoueur=0
 
     def __init__(self, name):
         self.name=name
@@ -19,12 +20,14 @@ class Player():
                           "orni":400,
                           "saboter":600}
     def applyRequest(self):
+        if(self.requests_remaining<=1):
+            self.fin_tour()
         self.requests_remaining-=1
-        self.getResponse()
+        return self.getResponse()
 
     def getResponse(self):
         rep = self.client.recv(1024).decode().rstrip()
-        print(self.name,":",rep)
+        # print(self.name,":",rep)
         if "DEBUT_TOUR" in rep:
             self.tour=rep.split('|')[-1]
             self.time_to_play=True
@@ -40,7 +43,8 @@ class Player():
         response = self.getResponse()
         if(response=="NOM_EQUIPE"):
             self.client.sendall((name+'\n').encode())
-            self.position_joueur=int(self.client.recv(1024).decode().rstrip()[-1])-1
+            self.position_joueur=int(self.client.recv(1024).decode().rstrip()[-1])
+            self.numjoueur=self.position_joueur
         else:
             print("Connection error")
         self.getResponse()
@@ -74,19 +78,36 @@ class Player():
 
     def infos_densite(self):
         self.client.sendall(("DENSITE"+'\n').encode())
-        self.applyRequest()
+        ans = self.applyRequest()
+        if not ans:
+            print(self.name, ": DENSITE: aucune réponse du serveur")
+            return None
+        ans = ans.rstrip()
+        densite_liste = []
+        for i in range(0, len(ans), 18):
+            densite_liste.append([int(char) for char in ans[i:i+18]])
+        return densite_liste
         
     def infos_elements(self):
         self.client.sendall(("ELEMENTS"+'\n').encode())
-        self.applyRequest()
+        ans = self.applyRequest()
+        if not ans:
+            print(self.name, ": ELEMENTS: aucune réponse du serveur")
+            return None
+        ans = ans.rstrip()
+        densite_liste = []
+        for i in range(0, len(ans), 18):
+            densite_liste.append(list(ans[i:i+18]))
+        return densite_liste
     
     def infos_warning(self):
         self.client.sendall(("WARNING"+'\n').encode()) 
-        self.applyRequest()
+        orni = self.applyRequest()
+        return orni.split("|")
         
     def infos_scores(self):
         self.client.sendall(("SCORES"+'\n').encode()) 
-        self.applyRequest()
+        return self.applyRequest()
     
 def assez_ressources(self, type_element, quantite) -> bool:
         """

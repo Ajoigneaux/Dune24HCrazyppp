@@ -72,7 +72,7 @@ def recalc_densite(densite, elements):
     foreuse=matrice_foreuse(elements)
     for i in range(16):
         for j in range(18):
-            new_densite[i][j]=densite[i][j]+usine[i][j]
+            new_densite[i][j]=int(densite[i][j])+usine[i][j]
             new_densite[i][j]*=foreuse[i][j]
 
     return new_densite
@@ -83,12 +83,24 @@ def parse_densite(densite):
         densite_liste.append([int(char) for char in densite[i:i+18]])
     return densite_liste
 
-element = [[0 for _ in range(18)] for _ in range(16)]
-element[1][1]="3"
-element[10][10]="2"
-element[1][2]="1"
+def quelle_region(ligne, colone): #haut gauche = 0 / haut droit = 1 / bas gauche = 2
+    if(ligne <= 7 and colone <= 8):
+        region = 0
+    elif(ligne <= 7 and colone >= 9):
+        region = 1
+    elif(ligne >= 8 and colone <= 8):
+        region = 2
+    elif(ligne >= 8 and colone >= 9):
+        region = 3
+    
+    return region
 
-densite_string = "111131211111112234112242311111212333111234421111133332233233211111233232123322221111144121112211121111332111322121233221221211323233322111121111333433434312321122333433432312221322232443322323222132424344443334221232324344323443421132333243112322211111232221112322111111112111111222111111"
-densite=parse_densite(densite_string)
+# element = [[0 for _ in range(18)] for _ in range(16)]
+# element[1][1]="3"
+# element[10][10]="2"
+# element[1][2]="1"
 
-print(recalc_densite(densite, element))
+# densite_string = "111131211111112234112242311111212333111234421111133332233233211111233232123322221111144121112211121111332111322121233221221211323233322111121111333433434312321122333433432312221322232443322323222132424344443334221232324344323443421132333243112322211111232221112322111111112111111222111111"
+# densite=parse_densite(densite_string)
+
+# print(recalc_densite(densite, element))
