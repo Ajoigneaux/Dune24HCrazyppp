@@ -8,6 +8,7 @@ class Player():
     time_to_play=False
     name=""
     tour=0
+    position_joueur=0 #Position du joueur dans le tour actuel
 
     def __init__(self, name):
         self.name=name
@@ -23,7 +24,7 @@ class Player():
             self.tour=rep.split('|')[-1]
             print(self.time_to_play)
             self.time_to_play=True
-            print(self.time_to_play)
+            self.position_joueur=(self.position_joueur+1)%4#A verifier
         print(self.name,":",rep)
         return rep
     
@@ -36,7 +37,7 @@ class Player():
         response = self.getResponse()
         if(response=="NOM_EQUIPE"):
             self.client.sendall((name+'\n').encode())
-            self.numJoueur=int(self.client.recv(1024).decode().rstrip()[-1])
+            self.position_joueur=int(self.client.recv(1024).decode().rstrip()[-1])-1
         else:
             print("Connection error")
         self.getResponse()
