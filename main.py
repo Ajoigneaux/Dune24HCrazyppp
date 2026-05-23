@@ -1,3 +1,8 @@
 from Player import Player
 
-player = Player("EKIp")
+player = Player("SuperCrazyLazy")
+
+game=True
+while(game):
+    if(player.play()):
+        print("PLAY")

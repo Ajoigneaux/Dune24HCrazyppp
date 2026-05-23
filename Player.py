@@ -3,59 +3,80 @@ import socket
 HOST = '127.0.0.1'
 PORT = 1234
 
-
 class Player():
+
+    time_to_play=False
+    name=""
+    tour=0
+
     def __init__(self, name):
         self.name=name
-        self.client=self.connectePlayer(self.name)
-        self.tour=1
+        self.connectePlayer(self.name)
 
     def getResponse(self):
-        rep = self.client.recv(1024).decode()
+        rep = self.client.recv(1024).decode().rstrip()
+        if "DEBUT_TOUR" in rep:
+            self.tour=rep.split('|')[-1]
+            print(self.time_to_play)
+            self.time_to_play=True
+            print(self.time_to_play)
         print(self.name,":",rep)
         return rep
     
+    def play(self):
+        return self.time_to_play
+    
     def connectePlayer(self, name):
-        client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        client.connect((HOST, PORT))
-        print(name, ":", client.recv(1024).decode())
-        client.sendall((name+'\n').encode())
-        self.numJoueur=int(client.recv(1024).decode().rstrip()[-1])
-        return client
+        self.client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.client.connect((HOST, PORT))
+        response = self.getResponse()
+        if(response=="NOM_EQUIPE"):
+            self.client.sendall((name+'\n').encode())
+            self.numJoueur=int(self.client.recv(1024).decode().rstrip()[-1])
+        else:
+            print("Connection error")
+        self.getResponse()
+    
     def ajouter_recolteuse(self, numligne, numcolonne):
         self.client.sendall(("AJOUTERRECOLTEUSE|{}|{}".format(numligne,numcolonne)+'\n').encode())
+        self.getResponse()
     
     def ajouter_usine(self, numligne,numcolonne):
-        """
-        """
         self.client.sendall(("AJOUTERUSINE|{}|{}".format(numligne,numcolonne)+'\n').encode())
+        self.getResponse()
 
     def deplacer(self, numlignedep,numcolonnedep,numlignearr,numcolonnearr):
         self.client.sendall(("DEPLACER|{}|{}|{}|{}".format(numlignedep,numcolonnedep,numlignearr,numcolonnearr)+'\n').encode())
-        
+        self.getResponse()
 
     def ajouter_orni(self,secteur):
         self.client.sendall(("AJOUTERORNI|{}".format(secteur)+'\n').encode())
+        self.getResponse()
 
     def saboter(self,secteur):
         self.client.sendall(("SABOTER|{}".format(secteur)+'\n').encode())
-
+        self.getResponse()
 
     def fin_tour(self):
+        self.time_to_play=False
         self.client.sendall(("FINDETOUR"+'\n').encode())
+        self.getResponse()
 
     def infos_densite(self):
-        self.client.sendall(("DENSITE"+'\n').encode())  
+        self.client.sendall(("DENSITE"+'\n').encode())
+        self.getResponse()
         
     def infos_elements(self):
-        self.client.sendall(("ELEMENTS"+'\n').encode()) 
+        self.client.sendall(("ELEMENTS"+'\n').encode())
+        self.getResponse()
     
     def infos_warning(self):
-        self.client.sendall(("WARINIG"+'\n').encode()) 
-        
+        self.client.sendall(("WARNING"+'\n').encode()) 
+        self.getResponse()
         
     def infos_scores(self):
-        self.client.sendall(("SCORES"+'\n').encode()) 
+        self.client.sendall(("SCORES"+'\n').encode())
+        self.getResponse()
     
     
 
