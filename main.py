@@ -11,12 +11,14 @@ while(game):
         print(f"Go tour {player.tour}")
         #Recalculer rentabilité cases
         #Eventuellement stocker etat plateau
-        if(player.tour==1):
-            densites = player.infos_densite()
+        # if(player.tour==1):
+            # densites = player.infos_densite()
             #Choisir lieu pour foreuse
             #Poser foreuse
-            player.ajouter_orni()
+            # player.ajouter_orni()
             #Recup info orni
                 #Bouger si besoin
+        player.infos_densite()
+        player.fin_tour()
             
 

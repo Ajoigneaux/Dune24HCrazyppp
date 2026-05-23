@@ -30,6 +30,7 @@ def is_adjacent(numligne1,numcolonne1,numligne2,numcolonne2):
                 return True
             else:
                 return False
+            
 def adjacence(numligne,numcolonne):
     if numligne%2==1:
         return [[numligne+1,numcolonne+1],[numligne,numcolonne+1],[numligne+1,numcolonne],[numligne,numcolonne-1],[numligne-1,numcolonne],[numligne-1,numcolonne+1]]

@@ -24,12 +24,11 @@ class Player():
 
     def getResponse(self):
         rep = self.client.recv(1024).decode().rstrip()
+        print(self.name,":",rep)
         if "DEBUT_TOUR" in rep:
             self.tour=rep.split('|')[-1]
-            print(self.time_to_play)
             self.time_to_play=True
             self.position_joueur=(self.position_joueur+1)%4#A verifier
-        print(self.name,":",rep)
         return rep
     
     def play(self):
@@ -70,44 +69,16 @@ class Player():
         self.time_to_play=False
         self.client.sendall(("FINDETOUR"+'\n').encode())
         self.requests_remaining=15
-        self.applyRequest()
+        self.getResponse()
+        self.getResponse()
 
     def infos_densite(self):
         self.client.sendall(("DENSITE"+'\n').encode())
-        ans = self.getResponse()
-        if not ans:
-            print(self.name, ": DENSITE: aucune réponse du serveur")
-            return None
-        ans = ans.rstrip()
-        densite_ligne = []
-        for i in range(0, len(ans), 18):
-            densite_ligne.append(list(ans[i:i+18]))
-        # ajouter deux bordures de zéros tout autour du tableau
-        padded = [["0"] * 22, ["0"] * 22]
-        for row in densite_ligne:
-            padded.append(["0", "0"] + row + ["0", "0"])
-        padded.append(["0"] * 22)
-        padded.append(["0"] * 22)
-        print(padded)
-        return padded
-
+        self.applyRequest()
+        
     def infos_elements(self):
         self.client.sendall(("ELEMENTS"+'\n').encode())
-        ans = self.getResponse()
-        if not ans:
-            print(self.name, ": ELEMENTS: aucune réponse du serveur")
-            return None
-        ans = ans.rstrip()
-        elements = []
-        for i in range(0, len(ans), 18):
-            elements.append(list(ans[i:i+18]))
-        # ajouter deux bordures de zéros tout autour du tableau
-        padded = [["0"] * 22, ["0"] * 22]
-        for row in elements:
-            padded.append(["0", "0"] + row + ["0", "0"])
-        padded.append(["0"] * 22)
-        padded.append(["0"] * 22)
-        return padded
+        self.applyRequest()
     
     def infos_warning(self):
         self.client.sendall(("WARNING"+'\n').encode()) 
